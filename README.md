@@ -10,28 +10,30 @@ bun install
 ```
 
 ### 2) 環境変数
-ルートに `.env.local` を作成：
+`.env.local` は commit 済みです（1Password CLI 経由で秘匿情報を参照）：
 ```env
-DATABASE_URL=postgres://user:password@localhost:5432/my_db
+DATABASE_URL="op://Private/my-auth-app/DATABASE_URL"
 
 // Generate from here : https://www.better-auth.com/docs/installation#set-environment-variables
-BETTER_AUTH_SECRET=your-secret
+BETTER_AUTH_SECRET="op://Private/my-auth-app/BETTER_AUTH_SECRET"
 BETTER_AUTH_URL=http://localhost:3000
 
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
+> **Note:** `op://` 形式の参照は、実行時に `op run --env-file=.env.local -- <command>` で展開されます。
+
 ### 3) DB スキーマ生成 & マイグレーション
 Better Auth のスキーマ生成と Drizzle マイグレーションを実行：
 ```bash
-bunx @better-auth/cli@latest generate --config ./better-auth.config.ts --output ./src/db/schema.ts
-bunx drizzle-kit generate
-bunx drizzle-kit migrate
+op run --env-file=.env.local -- bunx @better-auth/cli@latest generate --config ./better-auth.config.ts --output ./src/db/schema.ts
+op run --env-file=.env.local -- bunx drizzle-kit generate
+op run --env-file=.env.local -- bunx drizzle-kit migrate
 ```
 
 ### 4) 開発サーバー
 ```bash
-bun dev
+op run --env-file=.env.local -- bun dev
 # http://localhost:3000
 ```
 
